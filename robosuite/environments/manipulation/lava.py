@@ -305,18 +305,18 @@ class LAVA(SingleArmEnv):
         )
 
         # # Initialize food objects
-        food_objects = []
+        # food_objects = []
   
-        # Create food objects, adjust quantity as needed
-        for i in range(40):  
-            food = BoxObject(
-                name=f"food_{i}",
-                size_min=[0.008, 0.008, 0.008],
-                size_max=[0.01, 0.01, 0.01],
-                rgba=[1, 0.5, 0, 1],
-                material=redwood,
-            )
-            food_objects.append(food)
+        # # Create food objects, adjust quantity as needed
+        # for i in range(40):  
+        #     food = BoxObject(
+        #         name=f"food_{i}",
+        #         size_min=[0.008, 0.008, 0.008],
+        #         size_max=[0.01, 0.01, 0.01],
+        #         rgba=[1, 0.5, 0, 1],
+        #         material=redwood,
+        #     )
+        #     food_objects.append(food)
 
         # Create placement initializer
         if self.placement_initializer is not None:
@@ -328,7 +328,7 @@ class LAVA(SingleArmEnv):
             self.placement_initializer = UniformRandomSampler(
                 name="ObjectSampler",
                 # mujoco_objects=[self.bowl] + food_objects,
-                mujoco_objects=[self.bowl],
+                mujoco_objects=self.bowl,
                 x_range=[0.05, 0.1],
                 y_range=[0.05, 0.1],
                 rotation=None,
@@ -338,22 +338,22 @@ class LAVA(SingleArmEnv):
                 z_offset=0.1,
             )
 
-        if self.placement_initializer_food is not None:
-            self.placement_initializer_food.reset()
-            for food in food_objects:
-                self.placement_initializer_food.add_objects(food)
-        else:
-            self.placement_initializer_food = UniformRandomSampler(
-                name = "ObjectSampler_food",
-                mujoco_objects=food_objects,
-                x_range = [0.05, 0.1],
-                y_range = [0.05, 0.1],
-                rotation=None,
-                ensure_object_boundary_in_range=False,
-                ensure_valid_placement=False,
-                reference_pos=self.table_offset*1.1,
-                z_offset=0.1,
-            )
+        # if self.placement_initializer_food is not None:
+        #     self.placement_initializer_food.reset()
+        #     for food in food_objects:
+        #         self.placement_initializer_food.add_objects(food)
+        # else:
+        #     self.placement_initializer_food = UniformRandomSampler(
+        #         name = "ObjectSampler_food",
+        #         mujoco_objects=food_objects,
+        #         x_range = [0.05, 0.1],
+        #         y_range = [0.05, 0.1],
+        #         rotation=None,
+        #         ensure_object_boundary_in_range=False,
+        #         ensure_valid_placement=False,
+        #         reference_pos=self.table_offset*1.1,
+        #         z_offset=0.1,
+        #     )
         
         # # Manually set positions of bowl and food objects in the XML
         # bowl_body = self.model.worldbody.find(".//body[@name='bowl']")
@@ -365,7 +365,8 @@ class LAVA(SingleArmEnv):
         self.model = ManipulationTask(
             mujoco_arena=mujoco_arena,
             mujoco_robots=[robot.robot_model for robot in self.robots],
-            mujoco_objects=food_objects+[self.bowl],
+            # mujoco_objects=food_objects+[self.bowl],
+            mujoco_objects=self.bowl,
         )
 
     def _setup_references(self):
@@ -440,12 +441,12 @@ class LAVA(SingleArmEnv):
             for obj_pos, obj_quat, obj in object_placements.values():
                 self.sim.data.set_joint_qpos(obj.joints[0], np.concatenate([np.array(obj_pos), np.array(obj_quat)]))
 
-            # Sample from placements - food
-            object_placements1 = self.placement_initializer_food.sample()
+            # # Sample from placements - food
+            # object_placements1 = self.placement_initializer_food.sample()
 
-            # Loop
-            for obj_pos, obj_quat, obj in object_placements1.values():
-                self.sim.data.set_joint_qpos(obj.joints[0], np.concatenate([np.array(obj_pos), np.array(obj_quat)]))
+            # # Loop
+            # for obj_pos, obj_quat, obj in object_placements1.values():
+            #     self.sim.data.set_joint_qpos(obj.joints[0], np.concatenate([np.array(obj_pos), np.array(obj_quat)]))
 
                 
     def visualize(self, vis_settings):
